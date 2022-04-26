@@ -3,11 +3,13 @@ import urllib.error
 from pathlib import Path
 import os
 
-# sets current working directory as working directory 
+# sets current working directory as working directory
 bp = Path(os.getcwd())
 
 # function to create folders and ignore if folder exists
-def mkdir_except(folder_name):  
+
+
+def mkdir_except(folder_name):
 
     # try to make directory (folder_name), if it exists, ignore
     try:
@@ -19,7 +21,9 @@ def mkdir_except(folder_name):
         print("Directory {} already exists".format(folder_name))
 
 # Defines a function for downloading a url to a path.
-def download_save_zip(url, folder_path): 
+
+
+def download_save_zip(url, folder_path):
 
     # Create a filename from the passed url.
     file_name = url.split('/')[-1]
@@ -40,13 +44,13 @@ def download_save_zip(url, folder_path):
 
             # Checks if request is not a text file.
             # If not it will download the file, otherwise it will print an error message.
-            # This if statement does not seem to be working.
+            # This if statement does not seem to be working and downloads regardless.
             if not [i for i in req.getheaders() if 'text/html' in i]:
                 print('Downloading: {} '.format(url))
                 # Reads the request and saves it as a variable
                 data = req.read()
                 req.close()
-                
+
                 # Saves the files to the specified path created above.
                 local = open(sp, 'wb')
                 local.write(data)
@@ -57,6 +61,7 @@ def download_save_zip(url, folder_path):
 
         except urllib.error.URLError:
             print("URLError for {} ".format(url))
+
 
 # List of counties for scores to be run on. Below are counties within the 263m screening area.
 county_names = [
@@ -86,7 +91,7 @@ county_names = [
     'Sonoma',
     'Trinity',
     'Ventura',
-    ]
+]
 
 # Variables for beginning of geotracker urls.
 geotracker_edf_url = "https://geotracker.waterboards.ca.gov/data_download/edf_by_county/"
@@ -106,8 +111,8 @@ mkdir_except(geo_xy_path)
 
 
 """
-The function below creates a list of urls for GeoTracker downloads. It uses the county_names list 
-to create the urls. The urls are create by appending the county name to the beginning of the urls. 
+The download_geotracker() function below creates a list of urls for GeoTracker downloads. It uses the 
+county_names list to create the urls. The urls are create by appending the county name to the beginning of the urls. 
 Then the ending of the url is appened to the url depending on the type of download. These urls are
 appended to the urlList. The urlList is then looped through and the files are downloaded by calling the
 download_save_zip() function.
@@ -120,7 +125,9 @@ Variables:
     url_alt: The ending of the url.
     folder_path: The path to save the files.
 """
-def dl_geotracker(url_start, clist, url_alt, folder_path):
+
+
+def download_geotracker(url_start, clist, url_alt, folder_path):
     # Create empty list for urls.
     urlList = []
 
@@ -139,13 +146,14 @@ def dl_geotracker(url_start, clist, url_alt, folder_path):
         # folder_path is the fodler_path parameter.
         download_save_zip(j, folder_path)
 
+
 # Prints message and calls function to download geotracker sample resutls (edf)
 print('Downloading GeoTracker EDF Results Data: \n')
-dl_geotracker(geotracker_edf_url, county_names, edf_name, geo_edf_path)
+download_geotracker(geotracker_edf_url, county_names, edf_name, geo_edf_path)
 
 # Prints message and calls fuction to geotracker sample locations (xy)
 print('Downloading GeoTracker XY Data: \n')
-dl_geotracker(geotracker_xy_url, county_names, xy_name, geo_xy_path)
+download_geotracker(geotracker_xy_url, county_names, xy_name, geo_xy_path)
 
 # set base gama results url and creates a path for them to be downloaded to
 gama_base_url = 'https://gamagroundwater.waterboards.ca.gov/gama/data_download/'
@@ -182,6 +190,8 @@ Variables:
     alt_urls: The list of alternate urls for different datasets.
     dl_path: The path to save the files to.
 """
+
+
 def download_gama_results(start_url, clist, alt_urls, dl_path):
     # Create empty list for urls.
     url_list = []
@@ -211,7 +221,8 @@ def download_gama_results(start_url, clist, alt_urls, dl_path):
 
 # Prints message and runs function to download gama sample results data.
 print('Downloading GAMA sample results: \n')
-download_gama_results(gama_base_url, county_names, gama_alt_urls, gama_res_path)
+download_gama_results(gama_base_url, county_names,
+                      gama_alt_urls, gama_res_path)
 
 # Set base GAMA XY url and path for downloads.
 gama_xy_path = bp / 'gama_xy'
